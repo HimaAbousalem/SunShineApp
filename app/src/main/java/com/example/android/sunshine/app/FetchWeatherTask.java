@@ -23,7 +23,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.text.format.Time;
 import android.util.Log;
-import android.widget.ArrayAdapter;
 
 import com.example.android.sunshine.app.data.WeatherContract;
 import com.example.android.sunshine.app.data.WeatherContract.WeatherEntry;
@@ -44,13 +43,13 @@ public class FetchWeatherTask extends AsyncTask<String, Void, Void> {
 
     private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
 
-    private ArrayAdapter<String> mForecastAdapter;
     private final Context mContext;
 
     public FetchWeatherTask(Context context) {
         mContext = context;
-
     }
+
+    private boolean DEBUG = true;
 
     /**
      * Helper method to handle insertion of a new location in the weather database.
@@ -63,14 +62,15 @@ public class FetchWeatherTask extends AsyncTask<String, Void, Void> {
      */
     long addLocation(String locationSetting, String cityName, double lat, double lon) {
         long locationId;
-        // Students: First, check if the location with this city name exists in the db
+
+        // First, check if the location with this city name exists in the db
         Cursor locationCursor = mContext.getContentResolver().query(
                 WeatherContract.LocationEntry.CONTENT_URI,
                 new String[]{WeatherContract.LocationEntry._ID},
-                WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING +" = ?",
+                WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING + " = ?",
                 new String[]{locationSetting},
                 null);
-        // If it exists, return the current ID
+
         if (locationCursor.moveToFirst()) {
             int locationIdIndex = locationCursor.getColumnIndex(WeatherContract.LocationEntry._ID);
             locationId = locationCursor.getLong(locationIdIndex);
@@ -99,10 +99,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, Void> {
         locationCursor.close();
         // Wait, that worked?  Yes!
         return locationId;
-        // Otherwise, insert it using the content resolver and the base URI
     }
-
-
 
     /**
      * Take the String representing the complete forecast in JSON Format and
@@ -111,9 +108,8 @@ public class FetchWeatherTask extends AsyncTask<String, Void, Void> {
      * Fortunately parsing is easy:  constructor takes the JSON string and converts it
      * into an Object hierarchy for us.
      */
-
     private void getWeatherDataFromJson(String forecastJsonStr,
-                                        String locationSetting)
+                                            String locationSetting)
             throws JSONException {
 
         // Now we have a String representing the complete forecast in JSON Format.
