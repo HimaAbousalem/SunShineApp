@@ -1,2 +1,3 @@
 Sunshine
-========Udacity course project.
+
+Udacity course project.
